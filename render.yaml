@@ -10,21 +10,18 @@ services:
     envVars:
       - key: NODE_VERSION
         value: "24"
-      - key: GEMINI_API_KEY
-        sync: false
       - key: GEMINI_MODEL
         value: gemini-2.5-flash
+      - key: HISTORY_LIMIT
+        value: "8"
+      # O Render vai pedir estes 4 valores na criação:
+      - key: GEMINI_API_KEY
+        sync: false
       - key: WHATSAPP_TOKEN
         sync: false
       - key: WHATSAPP_PHONE_NUMBER_ID
         sync: false
       - key: WHATSAPP_VERIFY_TOKEN
-        generateValue: true
-      - key: WHATSAPP_APP_SECRET
         sync: false
-      - key: UPSTASH_REDIS_REST_URL
-        sync: false
-      - key: UPSTASH_REDIS_REST_TOKEN
-        sync: false
-      - key: HISTORY_LIMIT
-        value: "8"
+      # Opcionais (adicione depois em Environment): WHATSAPP_APP_SECRET,
+      # UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN
