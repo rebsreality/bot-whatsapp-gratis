@@ -59,7 +59,18 @@ export function createApp({ config, ai, whatsapp, store, getSystemPrompt, logger
     // Responde 200 imediatamente para a Meta não reenviar o evento.
     res.sendStatus(200);
 
-    for (const msg of extractTextMessages(req.body)) {
+    const messages = extractTextMessages(req.body);
+    if (!messages.length) {
+      const value = req.body?.entry?.[0]?.changes?.[0]?.value || {};
+      const kind = value.statuses ? `status ${value.statuses[0]?.status}` : value.messages ? `mensagem tipo ${value.messages[0]?.type}` : 'outro evento';
+      logger.info?.(`[webhook] evento ignorado (${kind})`);
+      // Erros de envio chegam como status "failed": mostra o motivo no log.
+      for (const s of value.statuses || []) {
+        if (s.status === 'failed') logger.error?.(`[webhook] ❌ envio falhou: ${JSON.stringify(s.errors)}`);
+      }
+    }
+
+    for (const msg of messages) {
       const job = handle(msg);
       pending.add(job);
       job.finally(() => pending.delete(job));

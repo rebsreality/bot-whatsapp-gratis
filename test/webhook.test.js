@@ -5,7 +5,7 @@ import crypto from 'node:crypto';
 import { createApp } from '../src/app.js';
 import { createMemoryStore } from '../src/store/memory.js';
 import { createGeminiClient, toWhatsAppFormat } from '../src/gemini.js';
-import { createWhatsAppClient } from '../src/whatsapp.js';
+import { createWhatsAppClient, brazilAlternateNumber } from '../src/whatsapp.js';
 import { extractTextMessages, normalizeHistory } from '../src/webhook.js';
 import { textMessage, statusUpdate, imageMessage, PHONE_NUMBER_ID } from './fixtures.js';
 
@@ -260,6 +260,31 @@ describe('falhas e segurança', () => {
     assert.equal(good.status, 200);
     assert.equal(srv.calls.sent.length, 1);
     await srv.close();
+  });
+
+  test('número BR sem o 9º dígito: tenta de novo com o 9', async () => {
+    assert.equal(brazilAlternateNumber('551187654321'), '5511987654321');
+    assert.equal(brazilAlternateNumber('5511987654321'), '551187654321');
+    assert.equal(brazilAlternateNumber('551134567890'), null); // fixo
+    assert.equal(brazilAlternateNumber('15551234567'), null); // EUA
+
+    const tried = [];
+    const wa = createWhatsAppClient({
+      token: 't',
+      phoneNumberId: '1',
+      logger: silent,
+      fetchImpl: async (_url, init) => {
+        const { to } = JSON.parse(init.body);
+        tried.push(to);
+        if (to === '551187654321') {
+          return new Response('{"error":{"code":131030,"message":"Recipient phone number not in allowed list"}}', { status: 400 });
+        }
+        return new Response('{}', { status: 200 });
+      },
+    });
+    await wa.sendText('551187654321', 'oi');
+    await wa.sendText('551187654321', 'de novo'); // já lembra o número que funciona
+    assert.deepEqual(tried, ['551187654321', '5511987654321', '5511987654321']);
   });
 
   test('falha da API da Meta não derruba o servidor', async () => {

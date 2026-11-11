@@ -41,6 +41,9 @@ export function isValidSignature(rawBody, signatureHeader, appSecret) {
   return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
 
+/** Esconde o meio do número nos logs (privacidade). */
+export const mask = (n) => String(n).replace(/^(\d{4})\d+(\d{4})$/, '$1****$2');
+
 /** Gemini exige que a conversa comece pelo usuário; também juntamos falas seguidas do mesmo papel. */
 export function normalizeHistory(history) {
   const out = [];
@@ -101,11 +104,17 @@ export function createMessageHandler({
 
     await whatsapp.sendText(msg.from, reply);
     await store.append(msg.from, 'model', reply);
+    logger.info?.(`[webhook] ✅ respondido para ${mask(msg.from)}`);
     return { status: 'replied', reply };
   }
 
   return function handle(msg) {
+    logger.info?.(`[webhook] 📩 mensagem de ${mask(msg.from)} para o número ${msg.phoneNumberId}`);
     if (phoneNumberId && msg.phoneNumberId && msg.phoneNumberId !== phoneNumberId) {
+      logger.warn?.(
+        `[webhook] ⚠️ ignorada: WHATSAPP_PHONE_NUMBER_ID=${phoneNumberId}, mas a mensagem chegou no número ` +
+          `${msg.phoneNumberId}. Corrija a variável no Render para ${msg.phoneNumberId}.`,
+      );
       return Promise.resolve({ status: 'ignored-other-number' });
     }
     if (alreadySeen(msg.id)) return Promise.resolve({ status: 'duplicate' });

@@ -24,6 +24,17 @@ const app = createApp({
   getSystemPrompt: () => loadSystemPrompt(config.promptFile),
 });
 
+// Confere na largada se o token e o ID do número da Meta estão certos.
+fetch(`https://graph.facebook.com/${config.graphApiVersion}/${config.whatsappPhoneNumberId}?fields=display_phone_number,verified_name`, {
+  headers: { Authorization: `Bearer ${config.whatsappToken}` },
+})
+  .then(async (r) => {
+    const body = await r.json().catch(() => ({}));
+    if (r.ok) console.log(`✅ Meta OK: número ${body.display_phone_number} (${body.verified_name})`);
+    else console.error(`❌ Meta recusou o token/ID do número: ${body.error?.message || r.status}`);
+  })
+  .catch((err) => console.error(`❌ Não consegui falar com a Meta: ${err.message}`));
+
 const server = app.listen(config.port, '0.0.0.0', () => {
   console.log(`✅ Bot rodando na porta ${config.port} | modelo: ${config.geminiModel} | memória: ${store.kind}`);
 });
