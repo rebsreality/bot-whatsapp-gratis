@@ -11,7 +11,7 @@ services:
       - key: NODE_VERSION
         value: "24"
       - key: GEMINI_MODEL
-        value: gemini-2.5-flash
+        value: gemini-flash-latest
       - key: HISTORY_LIMIT
         value: "8"
       # O Render vai pedir estes 4 valores na criação:

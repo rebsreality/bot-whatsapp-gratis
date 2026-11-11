@@ -25,9 +25,19 @@ export function createGeminiClient({ apiKey, model, client }) {
         },
       });
 
-      const text = (res.text || '').trim();
+      const text = toWhatsAppFormat((res.text || '').trim());
       if (!text) throw new Error('Gemini retornou resposta vazia');
       return text;
     },
   };
+}
+
+/** Converte Markdown comum para a formatação do WhatsApp (*negrito*, _itálico_, ~riscado~). */
+export function toWhatsAppFormat(text) {
+  return text
+    .replace(/\*\*(.+?)\*\*/g, '*$1*')
+    .replace(/__(.+?)__/g, '_$1_')
+    .replace(/~~(.+?)~~/g, '~$1~')
+    .replace(/^#{1,6}\s+(.+)$/gm, '*$1*')
+    .replace(/^(\s*)[-*]\s+/gm, '$1• ');
 }

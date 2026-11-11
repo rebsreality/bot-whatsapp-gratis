@@ -14,7 +14,7 @@ export const config = {
 
   // Google Gemini
   geminiApiKey: env.GEMINI_API_KEY || '',
-  geminiModel: env.GEMINI_MODEL || 'gemini-2.5-flash',
+  geminiModel: env.GEMINI_MODEL || 'gemini-flash-latest',
 
   // WhatsApp Cloud API (Meta)
   whatsappToken: env.WHATSAPP_TOKEN || '',

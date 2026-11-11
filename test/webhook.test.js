@@ -4,7 +4,7 @@ import crypto from 'node:crypto';
 
 import { createApp } from '../src/app.js';
 import { createMemoryStore } from '../src/store/memory.js';
-import { createGeminiClient } from '../src/gemini.js';
+import { createGeminiClient, toWhatsAppFormat } from '../src/gemini.js';
 import { createWhatsAppClient } from '../src/whatsapp.js';
 import { extractTextMessages, normalizeHistory } from '../src/webhook.js';
 import { textMessage, statusUpdate, imageMessage, PHONE_NUMBER_ID } from './fixtures.js';
@@ -90,6 +90,12 @@ describe('extração de mensagens', () => {
     assert.equal(extractTextMessages(imageMessage()).length, 0);
     assert.equal(extractTextMessages({}).length, 0);
     assert.equal(extractTextMessages(null).length, 0);
+  });
+  test('converte Markdown para formatação do WhatsApp', () => {
+    assert.equal(
+      toWhatsAppFormat('## Horário\n- **Segunda:** 9h\n- ~~Domingo~~'),
+      '*Horário*\n• *Segunda:* 9h\n• ~Domingo~',
+    );
   });
   test('histórico começa pelo usuário e junta papéis repetidos', () => {
     const h = normalizeHistory([

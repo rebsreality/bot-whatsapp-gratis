@@ -4,7 +4,7 @@ Atendimento automático para **WhatsApp Business** com IA, **custo zero** e sem 
 
 | Peça | Escolha | Custo |
 |------|---------|-------|
-| IA | Google Gemini (`gemini-2.5-flash`) via `@google/genai` | Tier gratuito (AI Studio) |
+| IA | Google Gemini (`gemini-flash-latest`, sempre o Flash mais novo) via `@google/genai` | Tier gratuito (AI Studio) |
 | WhatsApp | API Oficial da Meta (Cloud API) | Conversas iniciadas pelo cliente são grátis |
 | Servidor | Node.js 24 + Express 5 | Render / Koyeb free |
 | Memória | SQLite nativo (`node:sqlite`) → ou Upstash Redis | Grátis |
