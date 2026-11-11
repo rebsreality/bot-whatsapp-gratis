@@ -1,0 +1,20 @@
+{
+  "name": "bot-whatsapp-gratis",
+  "version": "1.0.0",
+  "description": "Atendimento automático para WhatsApp Business (Cloud API) com Google Gemini — custo zero.",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test --test-concurrency=1 \"test/**/*.test.js\""
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "dependencies": {
+    "@google/genai": "^1.0.0",
+    "express": "^5.1.0"
+  },
+  "license": "MIT"
+}
